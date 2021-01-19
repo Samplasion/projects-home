@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "outDir": "build",
+        "downlevelIteration": true,
+        "isolatedModules": false,
+        "esModuleInterop": true
+    },
+    "include": ["src/**/*.ts"]
+}

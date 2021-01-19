@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project List</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-black text-gray-300">
+    <nav class="flex items-center justify-between flex-wrap bg-red-700 p-6">
+        <div class="flex items-center flex-shrink-0 text-white mr-6">
+            <a href="/" class="font-semibold text-xl tracking-tight">My projects</a>
+        </div>
+    </nav>
+
+    <div class="px-8 lg:px-16">
+        <div class="flex pt-4 justify-between">
+            <div>
+                <h1 class="text-4xl">My projects</h1>
+                <p class="text-gray-400 text-xl">Here's a list of various webapps I've built (don't worry, the links open in new tabs).</p>
+            </div>
+            <div id="spinner" class="transition-opacity loader ease-linear rounded-full border-8 border-t-8 border-gray-200 border-t-red-500 h-16 w-16 animate-spin" style="border-top-color: #c44040;"></div>
+        </div>
+
+        <ol class="list-disc mt-4 block" style="margin-block-start: 1em; margin-block-end: 1em; margin-inline-start: 0px; margin-inline-end: 0px; padding-inline-start: 40px;" id="list"></ol>
+    </div>
+
+    <script>
+        // document.addEventListener("load", async function() {
+        fetch("/projects.json").then(res => res.json()).then(results => {
+            console.log(results);
+            document.querySelector("#spinner").classList.add("opacity-0");
+            for (let project of Object.values(results)) {
+                const div = document.createElement("div");
+                const a = document.createElement("a");
+                const p = document.createElement("p");
+                const li = document.createElement("li");
+
+                a.innerText = project.name;
+                a.href = "/" + project.repo;
+                a.className = "font-bold text-blue-500 underline";
+                a.target = "_blank";
+                p.innerText = project.description;
+
+                div.appendChild(a);
+                div.appendChild(p);
+                li.appendChild(div);
+
+                document.querySelector("#list").appendChild(li);
+            }
+        });
+        // });
+    </script>
+</body>
+
+</html>

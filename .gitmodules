@@ -1,0 +1,6 @@
+[submodule "csv-json"]
+	path = csv-json
+	url = https://github.com/Samplasion/csv-json.git
+[submodule "projects/csv-json"]
+	path = projects/csv-json
+	url = https://github.com/Samplasion/csv-json.git
