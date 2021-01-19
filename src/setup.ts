@@ -2,7 +2,6 @@ import fs from "fs/promises";
 import { Dir, existsSync } from "fs";
 import path from "path";
 import projects from "./projects";
-import { Repository, Submodule } from "nodegit";
 import { exec } from "child_process";
 
 async function sh(command: string) {
@@ -20,10 +19,12 @@ export default async function setup() {
         return fs.opendir(path.join(__dirname, "..", "projects"));
     });
     await sh(`mkdir ${projDir}`).catch(() => {});
+    const promises = [] as Promise<any>[];
     for (const project of Object.values(projects)) {
         if (existsSync(path.join(projDir, project.repo)))
             await sh(`cd ${path.join(projDir, project.repo)} && git pull origin master && cd ..`);
         else await sh(`cd ${projDir} && git submodule add https://github.com/Samplasion/${project.repo}.git`);
-        await sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`);
+        promises.push(sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`));
     }
+    return Promise.all<void>(promises);
 }
