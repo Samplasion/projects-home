@@ -1,8 +1,9 @@
 import fs from "fs/promises";
-import { Dir, existsSync } from "fs";
+import { Dir, existsSync, realpathSync } from "fs";
 import path from "path";
 import projects from "./projects";
 import { exec } from "child_process";
+import os from "os";
 
 async function sh(command: string) {
     return new Promise<[string, string]>((resolve, reject) => {
@@ -13,18 +14,17 @@ async function sh(command: string) {
 }
 
 export default async function setup() {
-    const projDir = path.join(__dirname, "..", "projects");
-    const dir = await fs.opendir(path.join(__dirname, "..", "projects")).catch((): Promise<Dir> => {
-        fs.mkdir(path.join(__dirname, "..", "projects"));
-        return fs.opendir(path.join(__dirname, "..", "projects"));
-    });
-    await sh(`mkdir ${projDir}`).catch(() => {});
+    const projDir = path.join(realpathSync(path.join(__dirname, "..")), "projects");
+    await sh(`mkdir ${os.platform() == "win32" ? "" : "-p"} ${projDir}`).catch(() => {});
     const promises = [] as Promise<any>[];
     for (const project of Object.values(projects)) {
-        if (existsSync(path.join(projDir, project.repo)))
-            await sh(`cd ${path.join(projDir, project.repo)} && git pull origin master && cd ..`);
-        else await sh(`cd ${projDir} && git submodule add https://github.com/Samplasion/${project.repo}.git`);
-        promises.push(sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`));
+        await sh(
+            existsSync(path.join(projDir, project.repo)) ?
+            `cd ${path.join(projDir, project.repo)} && git pull origin master` :
+            `cd ${projDir} && git submodule add --force https://github.com/Samplasion/${project.repo}.git`
+        ).then(() => {
+            promises.push(sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`));
+        });
     }
     return Promise.all<void>(promises);
 }
