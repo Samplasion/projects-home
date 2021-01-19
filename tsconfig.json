@@ -3,7 +3,8 @@
         "outDir": "build",
         "downlevelIteration": true,
         "isolatedModules": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "lib": ["ES2020"]
     },
     "include": ["src/**/*.ts"]
 }
