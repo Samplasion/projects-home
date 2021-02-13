@@ -3,7 +3,9 @@ import projects from "./projects";
 import setup from "./setup";
 import path from "path";
 
-setup().then(() => {
+const promise = process.argv.includes("--skip-download") || process.argv.includes("-s") ? Promise.resolve(void 0) : setup();
+
+promise.then(() => {
     const app = express();
 
     app.use(express.json({}));
@@ -17,9 +19,12 @@ setup().then(() => {
 
     app.get("*", (req, res) => {
         const split = req.url.split("/");
-        const proj = split[1];
+        let proj = split[1];
         if (!projects[proj]) {
-            return res.redirect("/");
+            proj = req.headers.referer.replace(/https?\:\/\//, "").split("/")[1];
+            if (!projects[proj])
+                return res.redirect("/");
+            else split.unshift(proj);
         }
 
         const p = split.slice(2, split.length);
@@ -36,7 +41,7 @@ setup().then(() => {
     app.listen(port, () => {
         const proj = Object.values(projects).map(p => {
             return ` - ${p.name}: http://localhost:${port}/${p.repo}`
-        })
+        }).join("\n");
         console.log(`Started on port ${port}.\n${proj}`);
     });
 });

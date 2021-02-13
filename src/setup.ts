@@ -23,7 +23,8 @@ export default async function setup() {
             `cd ${path.join(projDir, project.repo)} && git pull origin master` :
             `cd ${projDir} && git submodule add --force https://github.com/Samplasion/${project.repo}.git`
         ).then(() => {
-            promises.push(sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`));
+            console.log(`[SETUP] Cloned repo ${project.repo}`)
+            promises.push(sh(`cd ${path.join(projDir, project.repo)} && yarn && yarn build`).then(() => console.log(`[SETUP] Built ${project.repo}`)));
         });
     }
     return Promise.all<void>(promises);

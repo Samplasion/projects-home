@@ -4,3 +4,6 @@
 [submodule "projects/csv-json"]
 	path = projects/csv-json
 	url = https://github.com/Samplasion/csv-json.git
+[submodule "projects/overflow-visualizer"]
+	path = projects/overflow-visualizer
+	url = https://github.com/Samplasion/overflow-visualizer.git
